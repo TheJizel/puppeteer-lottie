@@ -117,17 +117,18 @@ module.exports = async (opts) => {
   const isMp4 = (ext === 'mp4')
   const isPng = (ext === 'png')
   const isJpg = (ext === 'jpg' || ext === 'jpeg')
+  const isWebp = (ext === 'webp')
 
-  if (!(isApng || isGif || isMp4 || isPng || isJpg)) {
+  if (!(isApng || isGif || isMp4 || isPng || isJpg || isWebp)) {
     throw new Error(`Unsupported output format "${output}"`)
   }
 
-  const tempDir = isGif ? tempy.directory() : undefined
-  const tempOutput = isGif
+  const tempDir = isGif || isWebp ? tempy.directory() : undefined
+  const tempOutput = isGif || isWebp
     ? path.join(tempDir, 'frame-%012d.png')
     : output
   const frameType = (isJpg ? 'jpeg' : 'png')
-  const isMultiFrame = isApng || isMp4 || /%d|%\d{2,3}d/.test(tempOutput)
+  const isMultiFrame = isApng || isMp4 || isWebp || /%d|%\d{2,3}d/.test(tempOutput)
 
   let lottieData = animationData
 
@@ -416,6 +417,26 @@ ${inject.body || ''}
     ].filter(Boolean)
 
     const executable = process.env.GIFSKI_PATH || 'gifski'
+    const cmd = [ executable ].concat(params).join(' ')
+
+    await execa.shell(cmd)
+
+    if (spinnerG) {
+      spinnerG.succeed()
+    }
+  } else if (isWebp) {
+    const spinnerG = !quiet && ora(`Generating Webp with img2webp`).start()
+
+    const framePattern = tempOutput.replace('%012d', '*')
+    const escapePath = arg => arg.replace(/(\s+)/g, '\\$1')
+
+    const params = [
+      '-d', Math.round(1000 / fps),
+      framePattern,
+      '-o', escapePath(output)
+    ].filter(Boolean)
+
+    const executable = process.env.IMG2WEBP_PATH || 'img2webp'
     const cmd = [ executable ].concat(params).join(' ')
 
     await execa.shell(cmd)
