@@ -71,6 +71,7 @@ module.exports = async (opts) => {
     style = { },
     inject = { },
     puppeteerOptions = { },
+    fps = 60,
     ffmpegOptions = {
       crf: 20,
       profileVideo: 'main',
@@ -151,7 +152,7 @@ module.exports = async (opts) => {
   const { w = 640, h = 480 } = lottieData
   const aR = w / h
 
-  const outputFps = isGif ? 50 : 60
+  const outputFps = isGif ? Math.min(50, fps) : fps
 
   ow(lottieFps, ow.number.integer.positive, 'animationData.fr')
   ow(w, ow.number.integer.positive, 'animationData.w')
