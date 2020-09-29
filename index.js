@@ -437,6 +437,7 @@ ${inject.body || ''}
     const escapePath = arg => arg.replace(/(\s+)/g, '\\$1')
 
     const params = [
+      '-lossy',
       '-d', Math.round(1000 / outputFps),
       framePattern,
       '-o', escapePath(output)
