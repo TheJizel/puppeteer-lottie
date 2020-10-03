@@ -72,6 +72,7 @@ module.exports = async (opts) => {
     inject = { },
     puppeteerOptions = { },
     fps = 60,
+    background = 'transparent',
     ffmpegOptions = {
       crf: 20,
       profileVideo: 'main',
@@ -188,7 +189,7 @@ module.exports = async (opts) => {
 }
 
 body {
-  background: transparent;
+  background: ${background};
 
   ${width ? 'width: ' + width + 'px;' : ''}
   ${height ? 'height: ' + height + 'px;' : ''}
