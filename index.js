@@ -251,10 +251,8 @@ ${inject.body || ''}
   })
   const page = await browser.newPage()
 
-  if (!quiet) {
-    page.on('console', console.log.bind(console))
-    page.on('error', console.error.bind(console))
-  }
+  page.on('console', console.log.bind(console))
+  page.on('error', console.error.bind(console))
 
   await page.setViewport({
     deviceScaleFactor,
