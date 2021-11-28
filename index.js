@@ -55,7 +55,7 @@ const injectLottie = `
  * @param {string} [opts.inject.style] - Optionally injected into a <style> tag within the document <head>
  * @param {string} [opts.inject.body] - Optionally injected into the document <body>
  * @param {object} [opts.browser] - Optional puppeteer instance to reuse
- *
+ * @param {object} [opts.progress] - Optional callback to report rendering progress, will be called with the following parameters: (frame, totalFrames)
  * @return {Promise}
  */
 module.exports = async (opts) => {
@@ -81,7 +81,8 @@ module.exports = async (opts) => {
     gifskiOptions = {
       quality: 80,
       fast: false
-    }
+    },
+    progress = undefined
   } = opts
 
   let {
@@ -370,9 +371,13 @@ ${inject.body || ''}
     // eslint-disable-next-line no-undef
     await page.evaluate((frame) => animation.goToAndStop(frame, true), frame * fpsRatio)
     const screenshot = await rootHandle.screenshot({
-      path: isMp4 ? undefined : frameOutputPath,
+      path: (isApng || isMp4) ? undefined : frameOutputPath,
       ...screenshotOpts
     })
+    
+    if(progress) {
+      progress(frame, numFrames)
+    }
 
     // single screenshot
     if (!isMultiFrame) {
