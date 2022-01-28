@@ -207,9 +207,11 @@ body {
 </head>
 
 <body>
-${inject.body || ''}
+<div id="container">
+  <div id="root"></div>
+  ${inject.body || ''}
+</div>
 
-<div id="root"></div>
 
 <script>
   const animationData = ${JSON.stringify(lottieData)}
@@ -267,7 +269,7 @@ ${inject.body || ''}
   const outputNumFrames = outputFps * duration
 
   const pageFrame = page.mainFrame()
-  const rootHandle = await pageFrame.$('#root')
+  const rootHandle = await pageFrame.$('#container')
 
   const screenshotOpts = {
     omitBackground: true,
@@ -374,7 +376,7 @@ ${inject.body || ''}
       path: (isApng || isMp4) ? undefined : frameOutputPath,
       ...screenshotOpts
     })
-    
+
     if(progress) {
       progress(frame, numFrames)
     }
@@ -389,6 +391,10 @@ ${inject.body || ''}
         ffmpegStdin.write(screenshot)
       }
     }
+
+    // while (true) {
+    //   return new Promise(resolve => setTimeout(resolve, 60000));
+    // }
   }
 
   await rootHandle.dispose()
