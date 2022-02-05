@@ -461,6 +461,22 @@ body {
     if (spinnerG) {
       spinnerG.succeed()
     }
+  } else if (/%d|%\d{2,3}d/.test(tempOutput)) {
+    let params = []
+
+    for (let i = 1; i < numOutputFrames; i++) {
+      params.push(`-d 17 ${i}-frame.png`)
+    }
+    params.push(`-o output.webp`)
+
+    const executable = process.env.IMG2WEBP_PATH || 'img2webp'
+    const cmd = [ executable ].concat(params).join(' ')
+
+    await execa.shell(cmd)
+
+    for (let i = 1; i < numOutputFrames; i++) {
+      fs.unlinkSync(`${i}-frame.png`)
+    }
   }
 
   if (tempDir) {
